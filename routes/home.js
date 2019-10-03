@@ -36,7 +36,7 @@ router.get('/dashboard', function (req, res) {
     }
 })
 
-router.post('/upload', function (req, res) {
+router.post('/upload', async function (req, res) {
 
     // not auth
     if (!req.user) res.redirect('/auth/login/google')
@@ -58,7 +58,10 @@ router.post('/upload', function (req, res) {
 
         let { name: filename, mimetype, data } = req.files.file_upload
 
-        const driveResponse = drive.files.create({
+        // console.log(req);
+
+
+        let driveResponse = await drive.files.create({
             requestBody: {
                 name: filename,
                 mimeType: mimetype
@@ -69,16 +72,55 @@ router.post('/upload', function (req, res) {
             }
         });
 
-        driveResponse.then(data => {
+        //console.log(driveResponse);
 
-            if (data.status == 200) res.redirect('/dashboard?file=upload') // success
-            else res.redirect('/dashboard?file=notupload') // unsuccess
+        await drive.permissions.create({
+            fileId: driveResponse.data.id,
+            resource: {
+                role: "reader",
+                type: "anyone",
+                allowFileDiscovery: true
+            }
+        });
 
-        }).catch(err => { throw new Error(err) })
+        let file = await drive.files.get({
+            fileId: driveResponse.data.id,
+            fields: '*' // to show every existing field
+        });
+
+        console.log(file.data.webContentLink);
+
+        try {
+            if (driveResponse.status == 200) {
+                res.send(file.data.webContentLink);
+                //res.redirect('/dashboard?file=upload') // success
+            }
+            else {
+                res.redirect('/dashboard?file=notupload') // unsuccess
+            }
+        } catch (error) {
+            throw error;
+        }
     }
+
+    // driveResponse.then(data => {
+    //     //console.log(data);
+    //     if (data.status == 200) res.redirect('/dashboard?file=upload') // success
+    //     else res.redirect('/dashboard?file=notupload') // unsuccess
+
+    // }).catch(err => { throw new Error(err) })
 })
 
-
+router.get('/file', function (req, res) {
+    //console.log(req);
+    // drive.files.get({
+    //     fileId: req.query.id,
+    //     fields: 'webLinkView'
+    //     }, function(err,result){
+    //       if(err) console.log(err) 
+    //       else console.log(result)
+    //   });
+})
 
 module.exports = router
 

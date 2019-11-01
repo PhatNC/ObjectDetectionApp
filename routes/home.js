@@ -1,8 +1,13 @@
 const { Router } = require('express')
 const passport = require('passport')
+var http = require("http");
+var querystring = require("querystring")
 const { google } = require('googleapis')
 const KEYS = require('../configs/keys')
 
+let url_share = "";
+let model_name = '';
+let type = '';
 
 const router = Router()
 
@@ -56,9 +61,8 @@ router.post('/upload', async function (req, res) {
 
         //move file to google drive
 
-        let { name: filename, mimetype, data } = req.files.file_upload
-
-        // console.log(req);
+        let { name: filename, mimetype, data } = req.files.file_upload;
+        model_name = req.body.model_name;
 
 
         let driveResponse = await drive.files.create({
@@ -71,9 +75,6 @@ router.post('/upload', async function (req, res) {
                 body: Buffer.from(data).toString()
             }
         });
-
-        //console.log(driveResponse);
-
         await drive.permissions.create({
             fileId: driveResponse.data.id,
             resource: {
@@ -87,40 +88,62 @@ router.post('/upload', async function (req, res) {
             fileId: driveResponse.data.id,
             fields: '*' // to show every existing field
         });
+        if (driveResponse.status == 200) {
+            console.log(file.data.mimeType);
+            console.log(model_name);
 
-        console.log(file.data.webContentLink);
+            switch (file.data.mimeType) {
+                case "image/jpeg":
+                    type = 'img';
+                    break;
+                case "video/mp4":
+                    type = 'video';
+                    break;
+                default:
+                    break;
+            }
 
-        try {
-            if (driveResponse.status == 200) {
-                res.send(file.data.webContentLink);
-                //res.redirect('/dashboard?file=upload') // success
+            if (type != '' && model_name != '') {
+                var link = file.data.webContentLink.toString();
+                let st = '"' + link + ',' + type + ',' + model_name + '"';
+                url_share = st;
+                // res.send(st);
+                sendPackage();
+                res.redirect('/dashboard?file=upload');
             }
-            else {
-                res.redirect('/dashboard?file=notupload') // unsuccess
-            }
-        } catch (error) {
-            throw error;
+        }
+        else {
+            res.redirect('/dashboard?file=notupload') // unsuccess
         }
     }
-
-    // driveResponse.then(data => {
-    //     //console.log(data);
-    //     if (data.status == 200) res.redirect('/dashboard?file=upload') // success
-    //     else res.redirect('/dashboard?file=notupload') // unsuccess
-
-    // }).catch(err => { throw new Error(err) })
 })
 
-router.get('/file', function (req, res) {
-    //console.log(req);
-    // drive.files.get({
-    //     fileId: req.query.id,
-    //     fields: 'webLinkView'
-    //     }, function(err,result){
-    //       if(err) console.log(err) 
-    //       else console.log(result)
-    //   });
-})
+
+function sendPackage() {
+    const net = require('net');
+    const client = new net.Socket();
+
+    const postData = querystring.stringify({
+        link: url_share,
+        type: "img",
+        model: "yolo"
+    });
+
+    client.connect(50000, '171.244.21.155', () => {
+        // callback, when connection successfull
+        console.log('Send');
+        client.write(postData);
+    });
+    client.on('data', (data) => {
+        console.log('Reply');
+        // callback, when app replies with data
+    });
+    client.on('close', (data) => {
+        console.log('Closed');
+
+        // callback, when socket is closed
+    });
+}
 
 module.exports = router
 

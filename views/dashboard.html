@@ -6,61 +6,223 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{title}}</title>
-    <link href="/static/materializ.css" rel="stylesheet" />
+    <!-- <link href="/static/materializ.css" rel="stylesheet" /> -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+    <style>
+        .nav-container {
+            min-height: 56px;
+            -webkit-backface-visibility: hidden;
+            background-color: #000A12;
+        }
+
+        .div_nav {
+            padding-right: 100px;
+            padding-left: 100px;
+            background-color: transparent;
+            border-width: 0px;
+            align-content: flex-end;
+
+        }
+
+        .main-navigation {
+            clear: both;
+            display: block;
+            width: 100%;
+            padding: 0px 5px;
+        }
+
+        ul li {
+            list-style-type: none;
+            display: inline-block;
+        }
+
+        .title {
+            font-size: 24px;
+            line-height: 52px;
+            color: white;
+            transition: all .3s ease;
+            -webkit-transition: all .3s ease;
+            -moz-transition: all .3s ease;
+            font-weight: 300;
+            margin-right: 10px;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        }
+
+        .title-black {
+            font-size: 24px;
+            line-height: 52px;
+            color: #000A12;
+            transition: all .3s ease;
+            -webkit-transition: all .3s ease;
+            -moz-transition: all .3s ease;
+            font-weight: 300;
+            margin-right: 10px;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        }
+
+        .title-item {
+            font-size: 22px;
+            color: #000A12;
+            transition: all .3s ease;
+            -webkit-transition: all .3s ease;
+            -moz-transition: all .3s ease;
+            font-weight: 300;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        }
+
+        a:link,
+        a:visited {
+            background-color: #EEE;
+            color: #000A12;
+            padding: 0px 25px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        a:hover,
+        a:active {
+            background-color: #FFF;
+        }
+
+        .circle {
+            width: 100px;
+            height: 100px;
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: middle;
+            border-radius: 50px;
+        }
+
+        .div-main {
+            padding: 10px 50px;
+        }
+
+        .submit-btn {
+            background-color: #000A12;
+            color: white;
+            height: 50px;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            margin: 20px auto;
+            font-size: 20px;
+            border-radius: 0;
+        }
+
+        .submit-btn:hover {
+            background-color: transparent;
+            border-width: 2px;
+            border-color: #000A12;
+            color: black;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
+
 <body>
+    <div class="nav-container">
+        <nav class="main-navigation">
+            <div class="navbar navbar-inverse div_nav">
+                <ul id="nav-mobile" class="navbar-text navbar-right">
+                    <li class="title">{{name}}</li>
+                    <li class="title"><a href="/auth/logout">Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
 
-    <nav style="background:#4857c1">
-        <div class="nav-wrapper">
-            <ul id="nav-mobile" class="right">
-                <li>{{name}}</li>
-                <li><a href="/auth/logout">Logout</a></li>
-            </ul>
+    <main class="div-main col-md-6 col-md-offset-3 col-sm-10 col-sm-offset-1" >
+        <div class="row">
+            <div class="col-sm-1">
+                <img src="{{avatar}}" alt="avatar" class="circle">
+            </div>
+            <div class="col-sm-10" style="margin-left: 20px;">
+                <ul class="collection">
+                    <li class="collection-item avatar">
+                        <p class="title-item">{{name}}</p>
+                        <p class="title-item">googleid - (user id) {{googleid}}</p>
+                        <p class="title-item">Email - {{email}}</p>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </nav>
-
-    <main>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col s12">
-                    <ul class="collection">
-                        <li class="collection-item avatar">
-                            <img src="{{avatar}}" alt="avatar" class="circle">
-                            <span class="title">{{name}}</span>
-                            <!-- <p>googleid - (user id) {{googleid}}</p> -->
-                            <p>Email - {{email}}</p>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col s12 m4 left">
-                    <form action="/upload" method="post" enctype="multipart/form-data">
-
-                        <input style="margin: 10px; align-content: flex-start" type="file" required name="file_upload">
+        <div class="row" >
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <!-- <input style="margin: 10px; align-content: flex-start" type="file" required name="file_upload"> -->
+                    <div class="input-group input-file" name="file_upload">
+                        <input type="text" class="form-control" style="height: 50px;" placeholder='Choose a file...' />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-choose" type="button"
+                                style="background-color: #000A12; color: white; height: 50px; width: 100px;">Choose</button>
+                        </span>
 
 
-                        <button style="display: block; margin: 0 auto" class="btn waves-effect waves-light"
-                            type="submit">UPLOAD</button>
-                    </form>
-
-                    <div style="margin-top: 20px">
-                        {% if (file == "uploaded") %}
-                        <div class="light-blue lighten-1" style="padding: 2px 10px">
-                            <p>File successfully uploaded</p>
-                        </div>
-                        {% elif (file == "notuploaded") %}
-                        <div class="light-blue lighten-1" style="padding: 2px 10px">
-                            <p>File failed to upload please try again</p>
-                        </div>
-                        {% endif %}
                     </div>
                 </div>
-            </div>
+
+                <label for="sel1" style="margin-top: 10px ;">Model (select one):</label>
+
+                <select class="form-control" style="height: 50px;" id="sel1" name="model_name">
+                    <option value="yolo" class="title-item">YOLO</option>
+                    <option value="sniper" class="title-item">SNIPER</option>
+                    <option value="retina" class="title-item">Retina</option>
+                </select>
+
+                <button class="btn submit-btn" type="submit">UPLOAD</button>
+        </div>
+        </form>
+        </div>
+        <div style="margin-top: 20px">
+            {% if (file == "uploaded") %}
+            <div class="alert alert-success">
+                <strong>Success!</strong> File successfully uploaded.
+              </div>
+            {% elif (file == "notuploaded") %}
+            <div class="alert alert-danger">
+                <strong>Danger!</strong> File failed to upload please try again.
+              </div>
+            {% endif %}
         </div>
     </main>
 
 
-
+    <script>
+        function bs_input_file() {
+            $(".input-file").before(
+                function () {
+                    if (!$(this).prev().hasClass('input-ghost')) {
+                        var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0'>");
+                        element.attr("name", $(this).attr("name"));
+                        element.change(function () {
+                            element.next(element).find('input').val((element.val()).split('\\').pop());
+                        });
+                        $(this).find("button.btn-choose").click(function () {
+                            element.click();
+                        });
+                        $(this).find("button.btn-reset").click(function () {
+                            element.val(null);
+                            $(this).parents(".input-file").find('input').val('');
+                        });
+                        $(this).find('input').css("cursor", "pointer");
+                        $(this).find('input').mousedown(function () {
+                            $(this).parents('.input-file').prev().click();
+                            return false;
+                        });
+                        return element;
+                    }
+                }
+            );
+        }
+        $(function () {
+            bs_input_file();
+        });
+    </script>
 </body>
 
 </html>
